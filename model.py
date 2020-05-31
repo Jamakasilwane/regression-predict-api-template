@@ -74,7 +74,7 @@ def _preprocess_data(data):
     
     ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
     predict_vector = ct.fit_transform(X_test)
-    predict_vector = np.delete(predictor_vector,1,axis=1)
+    predict_vector = np.delete(predict_vector,1,axis=1)
     # ------------------------------------------------------------------------
 
     return predict_vector
