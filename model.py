@@ -26,6 +26,8 @@ import numpy as np
 import pandas as pd
 import pickle
 import json
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
@@ -59,8 +61,20 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Pickup Lat','Pickup Long',
-                                        'Destination Lat','Destination Long']]
+    X_test = feature_vector_df.drop(['Order No','User Id',
+                    'Vehicle Type','Placement - Time',
+                    'Confirmation - Time','Arrival at Pickup - Time',
+                    'Pickup - Time', 'Temperature', 
+                    'Precipitation in millimeters','Rider Id',
+                    'Platform Type','Confirmation - Weekday (Mo = 1)',
+                    'Arrival at Pickup - Weekday (Mo = 1)','Pickup - Day of Month',
+                    'Pickup - Weekday (Mo = 1)', 'Pickup - Weekday (Mo = 1)',
+                      'Placement - Day of Month','Pickup Long','Destination Lat',
+                    'Destination Long','Confirmation - Day of Month'], axis=1)
+    
+    ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
+    predict_vector = ct.fit_transform(X_test)
+    predict_vector = np.delete(predictor_vector,1,axis=1)
     # ------------------------------------------------------------------------
 
     return predict_vector
