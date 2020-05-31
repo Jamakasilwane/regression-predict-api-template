@@ -43,7 +43,7 @@ def _preprocess_data(data):
 
     Returns
     -------
-    Pandas DataFrame : <class 'pandas.core.frame.DataFrame'>
+    Numpy 2 Dimensional array
         The preprocessed data, ready to be used our model for prediction.
 
     """
