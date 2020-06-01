@@ -61,16 +61,9 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    X_test = feature_vector_df.drop(['Order No','User Id',
-                    'Vehicle Type','Placement - Time',
-                    'Confirmation - Time','Arrival at Pickup - Time',
-                    'Pickup - Time', 'Temperature', 
-                    'Precipitation in millimeters','Rider Id',
-                    'Platform Type','Confirmation - Weekday (Mo = 1)',
-                    'Arrival at Pickup - Weekday (Mo = 1)','Pickup - Day of Month',
-                    'Pickup - Weekday (Mo = 1)', 'Pickup - Weekday (Mo = 1)',
-                      'Placement - Day of Month','Pickup Long','Destination Lat',
-                    'Destination Long','Confirmation - Day of Month'], axis=1)
+    X_test = feature_vector_df.loc[:, ['Personal or Business', 'Placement - Weekday (Mo = 1)',
+                'Arrival at Pickup - Day of Month', 'Distance (KM)', 
+                'Pickup Lat']]
     
     ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
     predict_vector = ct.fit_transform(X_test)
