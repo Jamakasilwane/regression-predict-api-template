@@ -59,7 +59,7 @@ def _preprocess_data(data):
     # The code below is for demonstration purposes only. You will not
     # receive marks for submitting this code in an unchanged state.
     # ---------------------------------------------------------------
-    
+
     # ----------- Replace this code with your own preprocessing steps --------
     X_test = feature_vector_df.loc[:, ['Personal or Business', 'Placement - Weekday (Mo = 1)',
                 'Arrival at Pickup - Day of Month', 'Distance (KM)', 
@@ -67,7 +67,7 @@ def _preprocess_data(data):
     
     ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
     predict_vector = ct.fit_transform(X_test)
-    predict_vector = np.delete(predict_vector,1,axis=1)
+    #predict_vector = np.delete(predict_vector,1,axis=1)
     # ------------------------------------------------------------------------
 
     return predict_vector
