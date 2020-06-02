@@ -69,6 +69,7 @@ def _preprocess_data(data):
 
     # Making a copy for the dataframe
     dataset_test = feature_vector_df.copy()
+    dataset_test = dataset_test.set_index('Order No')
     
     # Encoding Categoric Data
     # Hours were extracted and added to the dataframe as new columns
