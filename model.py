@@ -65,7 +65,7 @@ def _preprocess_data(data):
     #  Time Columns Types Into Datetime
     for col in list(feature_vector_df):
         if 'Time' in col:
-            test[col] = pd.to_datetime(test[col])
+            feature_vector_df[col] = pd.to_datetime(feature_vector_df[col])
 
     # Making a copy for the dataframe
     dataset_test = feature_vector_df.copy()
@@ -129,7 +129,7 @@ def _preprocess_data(data):
                             'Arrival at Pickup - Minutes', 'Pickup - Minutes',
                             'Placement - Seconds', 'Confirmation - Seconds',
                             'Arrival at Pickup - Seconds', 'Pickup - Seconds']]
-                            
+
     #changing the Index for X_test Dataframes to be Order No and convert the Dataframes to Numpy arrays
     X_test = X2.set_index('Order No').values
 
