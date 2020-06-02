@@ -120,7 +120,7 @@ def _preprocess_data(data):
     dataset_test.rename(columns={0: "Business", 1: "Personal"}, inplace=True)
 
     # Selecting columns for our test model
-    X2 = dataset_test.loc[:,['Order No','Distance (KM)', 'Temperature',
+    X2 = dataset_test.loc[:,['Distance (KM)', 'Temperature',
                             'Precipitation in millimeters', 'Platform Type 1', 
                             'Platform Type 2', 'Platform Type 3', 
                             'Platform Type 4', 'Business', 'Personal',
