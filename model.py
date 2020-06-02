@@ -26,8 +26,8 @@ import numpy as np
 import pandas as pd
 import pickle
 import json
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
@@ -61,12 +61,88 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    X_test = feature_vector_df.loc[:, ['Personal or Business', 'Placement - Weekday (Mo = 1)',
-                'Arrival at Pickup - Day of Month', 'Distance (KM)', 
-                'Pickup Lat']]
+
+    #  Time Columns Types Into Datetime
+    for col in list(feature_vector_df):
+        if 'Time' in col:
+            test[col] = pd.to_datetime(test[col])
+
+    # Making a copy for the dataframe
+    dataset_test = feature_vector_df.copy()
     
-    ct = ColumnTransformer(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
-    predict_vector = ct.fit_transform(X_test)
+    # Encoding Categoric Data
+    # Hours were extracted and added to the dataframe as new columns
+    dataset_test['Placement - Hour']=dataset_test['Placement - Time'].dt.hour
+
+    dataset_test['Confirmation - Hour']=dataset_test['Confirmation - Time'].dt.hour
+
+    dataset_test['Arrival at Pickup - Hour']=dataset_test['Arrival at Pickup - Time'].dt.hour
+
+    dataset_test['Pickup - Hour']=dataset_test['Pickup - Time'].dt.hour
+
+    # Minutes were extracted and added to the dataframe as new columns
+    dataset_test['Placement - Minutes']=dataset_test['Placement - Time'].dt.minute
+
+    dataset_test['Confirmation - Minutes']=dataset_test['Confirmation - Time'].dt.minute
+
+    dataset_test['Arrival at Pickup - Minutes']=dataset_test['Arrival at Pickup - Time'].dt.minute
+
+    dataset_test['Pickup - Minutes']=dataset_test['Pickup - Time'].dt.minute
+
+    # Seconds were extracted and added to the dataframe as new columns
+    dataset_test['Placement - Seconds']=dataset_test['Placement - Time'].dt.second
+
+    dataset_test['Confirmation - Seconds']=dataset_test['Confirmation - Time'].dt.second
+
+    dataset_test['Arrival at Pickup - Seconds']=dataset_test['Arrival at Pickup - Time'].dt.second
+
+    dataset_test['Pickup - Seconds']=dataset_test['Pickup - Time'].dt.second
+
+    # Platform Type
+    dataset_test['Platform Type'] = dataset_test['Platform Type'].astype('category')
+    dataset_test = pd.concat([dataset_test.drop(columns=['Platform Type']),
+                            pd.get_dummies(dataset_test['Platform Type'])], 
+                            axis=1)
+
+    # Renaming the 'platform type' columns
+    dataset_test.rename(columns={1: "Platform Type 1", 2: "Platform Type 2", 3:
+                                "Platform Type 3", 4: "Platform Type 4"},
+                        inplace=True)
+
+    # Dummy coding of the 'Personal or Business' column
+    dataset_test['Personal or Business'] = dataset_test['Personal or Business'].astype('category')
+    dataset_test = pd.concat([dataset_test.drop(columns=['Personal or Business']), 
+                            pd.get_dummies(dataset_test['Personal or Business'])],
+                            axis=1)
+
+    # Renaming the 'Personal or Business' columns
+    dataset_test.rename(columns={0: "Business", 1: "Personal"}, inplace=True)
+
+    # Selecting columns for our test model
+    X2 = dataset_test.loc[:,['Order No','Distance (KM)', 'Temperature',
+                            'Precipitation in millimeters', 'Platform Type 1', 
+                            'Platform Type 2', 'Platform Type 3', 
+                            'Platform Type 4', 'Business', 'Personal',
+                            'Placement - Hour', 'Confirmation - Hour', 
+                            'Arrival at Pickup - Hour', 'Pickup - Hour', 
+                            'Placement - Minutes', 'Confirmation - Minutes',
+                            'Arrival at Pickup - Minutes', 'Pickup - Minutes',
+                            'Placement - Seconds', 'Confirmation - Seconds',
+                            'Arrival at Pickup - Seconds', 'Pickup - Seconds']]
+                            
+    #changing the Index for X_test Dataframes to be Order No and convert the Dataframes to Numpy arrays
+    X_test = X2.set_index('Order No').values
+
+    # Replacing the Nan values with the mean
+    imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+    imputer.fit(X_test[:,1:3])
+    X_test[:,1:3] = imputer.transform(X_test[:,1:3])
+
+    # Feature Scaling of the training and test data set
+    sc = StandardScaler()
+    X_test[:,:] = sc.transform(X_test[:,:])
+
+    predict_vector = X_test
     
     # ------------------------------------------------------------------------
 
