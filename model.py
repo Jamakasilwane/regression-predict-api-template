@@ -70,7 +70,7 @@ def _preprocess_data(data):
     # Making a copy for the dataframe
     dataset_test = feature_vector_df.copy()
     dataset_test = dataset_test.set_index('Order No')
-    
+
     # Encoding Categoric Data
     # Hours were extracted and added to the dataframe as new columns
     dataset_test['Placement - Hour']=dataset_test['Placement - Time'].dt.hour
@@ -132,7 +132,7 @@ def _preprocess_data(data):
                             'Arrival at Pickup - Seconds', 'Pickup - Seconds']]
 
     #changing the Index for X_test Dataframes to be Order No and convert the Dataframes to Numpy arrays
-    X_test = X2.set_index('Order No').values
+    X_test = X2.values
 
     # Replacing the Nan values with the mean
     imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
